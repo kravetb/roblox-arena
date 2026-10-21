@@ -1,15 +1,16 @@
 -- src/shared/ShopUtil.luau
-local getAmount = {}
+--!strict
+local ShopUtil = {}
 
 
-function getAmount.maxAmount(amount) : (string, number)
+function ShopUtil.maxAmount(amount: { [string]: number }): (string, number)
     if amount == nil or next(amount) == nil then
         return "", 0
     end
-    local maxItem = nil
+    local maxItem = ""
     local maxValue = 0
     for item, value in amount do
-        if maxItem == nil or value > amount[maxItem] then
+        if maxItem == "" or value > maxValue then
             maxItem = item
             maxValue = value
         end
@@ -18,11 +19,11 @@ function getAmount.maxAmount(amount) : (string, number)
 end
 
 
-function getAmount.takeUserMoney(price: number, money: number) : (number)
+function ShopUtil.takeUserMoney(price: number, money: number): number
     if money < price then
         error("Not enough money to take")
     end
     return money - price
 end
 
-return getAmount
+return ShopUtil
