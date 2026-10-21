@@ -28,7 +28,6 @@ print(joined)
 
 local amount = {["Weapon"] = 100, ["Armor"] = 50, ["Potion"] = 25}
 
-local EncodingService = game:GetService("EncodingService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local getMaxAmount = require(ReplicatedStorage.Shared.ShopUtil).maxAmount
 
