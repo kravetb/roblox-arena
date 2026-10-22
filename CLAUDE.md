@@ -37,17 +37,16 @@
 
 ## План
 
-1. [~] Luau і середовище: налаштування ✅, розминка ✅, далі класи Item/Weapon на метатаблицях
+1. [x] Luau і середовище: налаштування, розминка, класи Item/Weapon на метатаблицях
 2. [ ] Архітектура клієнт-сервер: RemoteEvents як API, Services/Controllers, цикл раундів
 3. [ ] Дані та економіка: DataStoreService (сесії, retry), leaderstats, валюта, магазин
 4. [ ] UI, TweenService, звуки, тести (TestEZ), оптимізація, публікація
 
 ## Поточне завдання
 
-Завдання 1, класи на метатаблицях:
-- `src/shared/Items/Item.luau`: поля `name`, `price`; `Item.new(name, price)`, `item:describe(): string`.
-- `src/shared/Items/Weapon.luau` наслідує Item: `damage`, `cooldown`, `weapon:canAttack(now: number): boolean`, перевизначений `describe()`.
-- Перевірка з `src/server/init.server.luau`.
+Крок 2: клієнт-серверна архітектура. Перше завдання ще не видане.
+
+Готово в кроці 1: `src/shared/Items/Item.luau`, `src/shared/Items/Weapon.luau` (наслідування, кулдаун атаки).
 
 ## Матеріали
 
