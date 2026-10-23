@@ -1,13 +1,11 @@
 --!strict
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Weapon = require(ReplicatedStorage.Shared.Items.Weapon)
-
-local sword = Weapon.new("Sword", 100, 25, 1.5)
-print(sword:describe())
-print(sword:attack(os.clock()))
-print(sword:attack(os.clock()))
+local Players = game:GetService("Players")
+local CurrencyService = require(script.Services.CurrencyService)
+CurrencyService.start()
 task.wait(2)
-print(sword:attack(os.clock()))
+for _, player in Players:GetPlayers() do
+    print(player.Name, CurrencyService.get(player))
+end
 
 
 print("Hello world, from server! Hi manager!")
