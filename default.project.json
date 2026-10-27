@@ -22,8 +22,9 @@
     },
 
     "StarterPlayer": {
+      "$className": "StarterPlayer",
       "StarterPlayerScripts": {
-        "$className": "StarterPlayer",
+      "$className": "StarterPlayerScripts",
         "Client": {
           "$path": "src/client"
         }

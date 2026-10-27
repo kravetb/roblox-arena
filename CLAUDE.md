@@ -44,10 +44,17 @@
 
 ## Поточне завдання
 
-Крок 2: клієнт-серверна архітектура. Перше завдання ще не видане.
+Крок 2. Завдання 2.1 (магазин через RemoteFunction `BuyItem`) виконано й протестовано, включно з тестом читера:
+- `src/shared/ItemCatalog.luau`: заморожений каталог шаблонів (Sword: Weapon, Potion і Shield: Item).
+- `src/server/Services/CurrencyService.luau`: 100 монет на старті, `get`, `trySpend`, очищення в PlayerRemoving.
+- `src/server/Services/ShopService.luau`: `OnServerInvoke` з guard clauses: rate limit 0.5 с (`TooFast`), потім `InvalidItem`, `UnknownItem`, `NotEnoughCoins`, при успіху `{ ok = true, coins }`.
+- `src/client/Controllers/ShopController.luau`: клавіша B викликає `InvokeServer("Sword")`.
+
+Далі: прибирання після 2.1 (видалити CheaterTest, перенести `BuyResult` у Shared), потім завдання 2.2: цикл раундів.
 
 Готово в кроці 1: `src/shared/Items/Item.luau`, `src/shared/Items/Weapon.luau` (наслідування, кулдаун атаки).
 
 ## Матеріали
 
 - Шпаргалка Luau для Python-розробника: https://claude.ai/artifact/VAgnzEzKA57WcMfCooYR1w
+- Крок 2: клієнт-сервер у Roblox: https://claude.ai/artifact/DHKoD5i7rCZmfrp7mA9WgJ
