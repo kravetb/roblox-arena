@@ -3,11 +3,12 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CurrencyService = require(script.Parent.CurrencyService)
 local ItemCatalog = require(ReplicatedStorage.Shared.ItemCatalog)
+local BuyResultModule = require(ReplicatedStorage.Shared.Results.BuyResult)
 local BuyItem = ReplicatedStorage.Remotes.BuyItem :: RemoteFunction
 
+type BuyResult = BuyResultModule.BuyResult
 
 local ShopService = {}
-export type BuyResult = {ok: boolean, coins: number?, reason: string?}
 local RATE_LIMIT = 0.5
 local lastPurchase: {[Player]: number} = {}
 
