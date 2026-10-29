@@ -1,6 +1,8 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameStateModule = require(ReplicatedStorage.Shared.States.GameState)
+local Players = game:GetService("Players")
+local arenaSpawns = workspace:WaitForChild("Arena"):WaitForChild("Spawns")
 
 type GameState = GameStateModule.GameState
 
@@ -20,14 +22,40 @@ local function setState(state: GameState, duration: number)
 end
 
 
+local function teleportToArena()
+    local spawns = arenaSpawns:GetChildren()
+    for i, player in Players:GetPlayers() do
+        local character = player.Character
+        if not character then
+            continue
+        end
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not humanoid or humanoid.Health <= 0 then
+            continue
+        end
+        local spawn = spawns[(i - 1) % #spawns + 1] :: BasePart
+        character:PivotTo(spawn.CFrame + Vector3.new(0, 3, 0))
+    end
+end
+
+
+local function teleportToLobby()
+    for _, player in Players:GetPlayers() do
+        task.spawn(function() player:LoadCharacterAsync() end)
+    end
+end
+
+
 local function runGameLoop()
     while true do
         setState("Lobby", LOBBY_TIME)
         task.wait(LOBBY_TIME)
         setState("InRound", ROUND_TIME)
+        teleportToArena()
         task.wait(ROUND_TIME)
         setState("Results", RESULT_TIME)
         task.wait(RESULT_TIME)
+        teleportToLobby()
     end
 end
 
