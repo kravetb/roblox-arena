@@ -2,6 +2,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameStateModule = require(ReplicatedStorage.Shared.States.GameState)
 local Players = game:GetService("Players")
+local CurrencyService = require(script.Parent.CurrencyService)
+local RoundEnded = ReplicatedStorage.Remotes.RoundEnded :: RemoteEvent
 local arenaSpawns = workspace:WaitForChild("Arena"):WaitForChild("Spawns")
 
 type GameState = GameStateModule.GameState
@@ -10,6 +12,7 @@ local LOBBY_TIME = 15
 local ROUND_TIME = 60
 local RESULT_TIME = 5
 local MIN_PLAYERS = 1
+local WINNER_REWARD = 50
 
 local alivePlayers: {[Player]: boolean} = {}
 
@@ -61,6 +64,15 @@ local function countAlive(): number
 end
 
 
+local function getWinner(): Player?
+    if countAlive() == 1 then
+        local winner = next(alivePlayers)
+        return winner
+    end
+    return nil
+end
+
+
 local function waitForRoundEnd()
     local startCount = countAlive()
     local threshold = if startCount >= 2 then 1 else 0
@@ -77,17 +89,27 @@ end
 
 local function runGameLoop()
     while true do
+
         if #Players:GetPlayers() < MIN_PLAYERS then
             setState("Waiting", 0)
             while #Players:GetPlayers() < MIN_PLAYERS do
                 task.wait(1)
             end
         end
+
         setState("Lobby", LOBBY_TIME)
         task.wait(LOBBY_TIME)
+
         setState("InRound", ROUND_TIME)
         teleportToArena()
         waitForRoundEnd()
+        local winner = getWinner()
+        if winner then
+            CurrencyService.add(winner, WINNER_REWARD)
+            print(`Round - Winner: {winner.Name} Reward: {WINNER_REWARD}`)
+        end
+        RoundEnded:FireAllClients(if winner then winner.Name else nil)
+
         setState("Results", RESULT_TIME)
         task.wait(RESULT_TIME)
         teleportToLobby()

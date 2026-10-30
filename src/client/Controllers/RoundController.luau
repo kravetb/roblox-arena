@@ -1,6 +1,7 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameStateModule = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("States"):WaitForChild("GameState"))
+local RoundEnded = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RoundEnded") :: RemoteEvent
 
 type GameState = GameStateModule.GameState
 
@@ -35,6 +36,13 @@ end
 
 function RoundController.start()
     ReplicatedStorage:GetAttributeChangedSignal("GameState"):Connect(onStateChanged)
+    RoundEnded.OnClientEvent:Connect(function(winnerName: unknown)
+        if typeof(winnerName) == "string" then
+            print(`[Client] Winner: {winnerName}`)
+        else
+            print('[Client] No winner')
+        end
+    end)
     onStateChanged()
     task.spawn(countTime)
 end

@@ -22,6 +22,17 @@ function CurrencyService.trySpend(player: Player, amount: number): boolean
     return true
 end
 
+function CurrencyService.add(player: Player, amount: number): boolean
+    if amount <= 0 then
+        return false
+    end
+    if not balances[player] then
+        return false
+    end
+    balances[player] += amount
+    return true
+end
+
 function CurrencyService.start()
 
     local function onPlayerAdded(player: Player)

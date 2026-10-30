@@ -8,9 +8,12 @@
         "$path": "src/shared"
       },
       "Remotes": {
-      "$className": "Folder",
-      "BuyItem": {
+        "$className": "Folder",
+        "BuyItem": {
           "$className": "RemoteFunction"
+        },
+        "RoundEnded": { 
+          "$className": "RemoteEvent" 
         }
       }
     },
