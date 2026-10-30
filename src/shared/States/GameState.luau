@@ -1,3 +1,3 @@
 --!strict
-export type GameState = "Lobby" | "InRound" | "Results"
+export type GameState = "Lobby" | "InRound" | "Results" | "Waiting"
 return {}

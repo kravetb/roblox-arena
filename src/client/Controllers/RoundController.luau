@@ -21,7 +21,7 @@ end
 local function countTime()
     while true do
         local endsAt = ReplicatedStorage:GetAttribute("PhaseEndsAt")
-        if typeof(endsAt) ~= "number" then
+        if typeof(endsAt) ~= "number" or workspace:GetServerTimeNow() == 0 then
             print("Waiting for server ...")
             task.wait(1)
             continue
