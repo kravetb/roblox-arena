@@ -44,13 +44,17 @@
 
 ## Поточне завдання
 
-Крок 2. Завдання 2.1 (магазин через RemoteFunction `BuyItem`) виконано й протестовано, включно з тестом читера:
-- `src/shared/ItemCatalog.luau`: заморожений каталог шаблонів (Sword: Weapon, Potion і Shield: Item).
-- `src/server/Services/CurrencyService.luau`: 100 монет на старті, `get`, `trySpend`, очищення в PlayerRemoving.
-- `src/server/Services/ShopService.luau`: `OnServerInvoke` з guard clauses: rate limit 0.5 с (`TooFast`), потім `InvalidItem`, `UnknownItem`, `NotEnoughCoins`, при успіху `{ ok = true, coins }`.
-- `src/client/Controllers/ShopController.luau`: клавіша B викликає `InvokeServer("Sword")`.
+Крок 2 завершено.
+- 2.1, магазин: RemoteFunction `BuyItem`, `ShopService` з валідацією та rate limit, `BuyResult` у `src/shared/Results/`.
+- 2.2, цикл раундів, у `src/server/Services/RoundService.luau`: Waiting → Lobby (15 с) → InRound (до 60 с) → Results (5 с).
+  - Стан передається через атрибути `GameState` і `PhaseEndsAt` на ReplicatedStorage.
+  - Телепорт на арену через `PivotTo`, у лобі через `LoadCharacterAsync`.
+  - Раунд закінчується достроково, коли лишається один живий.
+  - Переможець отримує 50 монет (`CurrencyService.add`), а клієнти дізнаються про нього через RemoteEvent `RoundEnded`.
+- Клієнт `src/client/Controllers/RoundController.luau` друкує стан, таймер і переможця.
+- Карта зберігається в `place.rbxl`.
 
-Далі: прибирання після 2.1 (видалити CheaterTest, перенести `BuyResult` у Shared), потім завдання 2.2: цикл раундів.
+Далі крок 3: DataStore (збереження монет між сесіями), leaderstats, надійна економіка.
 
 Готово в кроці 1: `src/shared/Items/Item.luau`, `src/shared/Items/Weapon.luau` (наслідування, кулдаун атаки).
 
@@ -58,3 +62,6 @@
 
 - Шпаргалка Luau для Python-розробника: https://claude.ai/artifact/VAgnzEzKA57WcMfCooYR1w
 - Крок 2: клієнт-сервер у Roblox: https://claude.ai/artifact/DHKoD5i7rCZmfrp7mA9WgJ
+- Підсумок 2.1 (магазин): https://claude.ai/artifact/5CG95o6qpkHTUJDWWdnSYx
+- Концепції циклу раундів: https://claude.ai/artifact/3ETdTAU3qa1tdrWvqkHMD2
+- Підсумок 2.2 (цикл раундів): https://claude.ai/artifact/CmfbybF6KMieTfLd88NXUn

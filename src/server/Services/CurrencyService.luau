@@ -1,56 +1,32 @@
 --!strict
-local Players = game:GetService("Players")
+local DataService = require(script.Parent.DataService)
 
 local CurrencyService = {}
 
-local STARTING_BALANCE = 100
-local balances: {[Player]: number} = {}
-
 function CurrencyService.get(player: Player): number
-    return balances[player] or 0
+    local data = DataService.get(player)
+    if data then
+        return data.coins
+    end
+    return 0
 end
 
 function CurrencyService.trySpend(player: Player, amount: number): boolean
-    if amount <= 0 then
+    local playerData = DataService.get(player)
+    if amount <= 0 or not playerData or playerData.coins < amount then
         return false
     end
-    local balance = balances[player]
-    if not balance or balance < amount then
-        return false
-    end
-    balances[player] = balance - amount
+    playerData.coins -= amount
     return true
 end
 
 function CurrencyService.add(player: Player, amount: number): boolean
-    if amount <= 0 then
+    local playerData = DataService.get(player)
+    if not playerData or amount <= 0 then
         return false
     end
-    if not balances[player] then
-        return false
-    end
-    balances[player] += amount
+    playerData.coins += amount
     return true
-end
-
-function CurrencyService.start()
-
-    local function onPlayerAdded(player: Player)
-        if balances[player] then
-            return
-        end
-        balances[player] = STARTING_BALANCE
-    end
-
-    Players.PlayerAdded:Connect(onPlayerAdded)
-    Players.PlayerRemoving:Connect(function(player: Player)
-        balances[player] = nil
-    end)
-
-    for _, player in Players:GetPlayers() do
-        onPlayerAdded(player)
-    end
-
 end
 
 return CurrencyService

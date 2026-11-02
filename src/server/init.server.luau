@@ -1,8 +1,8 @@
 --!strict
-local CurrencyService = require(script.Services.CurrencyService)
+local DataService = require(script.Services.DataService)
 local ShopService = require(script.Services.ShopService)
 local RoundService = require(script.Services.RoundService)
-CurrencyService.start()
+DataService.start()
 ShopService.start()
 RoundService.start()
 
