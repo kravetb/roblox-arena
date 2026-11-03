@@ -63,6 +63,13 @@ function DataService.start()
             return
         end
         profiles[player] = playerData
+        local folder = Instance.new("Folder")
+        folder.Name = "leaderstats"
+        local coins = Instance.new("IntValue")
+        coins.Name = "Coins"
+        coins.Value = playerData.coins
+        coins.Parent = folder
+        folder.Parent = player
         print(`[Data] Loaded {player.Name}: {playerData.coins} coins`)
     end
 

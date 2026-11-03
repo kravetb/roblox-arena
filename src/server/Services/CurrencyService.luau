@@ -1,6 +1,20 @@
 --!strict
 local DataService = require(script.Parent.DataService)
 
+
+local function updateLeaderstats(player: Player, coins: number)
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if not leaderstats then
+        return
+    end
+    local coinsValue = leaderstats:FindFirstChild("Coins")
+    if not coinsValue or not coinsValue:IsA("IntValue") then
+        return
+    end
+    coinsValue.Value = coins
+end
+
+
 local CurrencyService = {}
 
 function CurrencyService.get(player: Player): number
@@ -17,6 +31,7 @@ function CurrencyService.trySpend(player: Player, amount: number): boolean
         return false
     end
     playerData.coins -= amount
+    updateLeaderstats(player, playerData.coins)
     return true
 end
 
@@ -26,6 +41,7 @@ function CurrencyService.add(player: Player, amount: number): boolean
         return false
     end
     playerData.coins += amount
+    updateLeaderstats(player, playerData.coins)
     return true
 end
 
