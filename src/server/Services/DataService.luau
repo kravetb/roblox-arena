@@ -6,6 +6,40 @@ local store = DataStoreService:GetDataStore("PlayerData_v1")
 export type PlayerData = {coins: number}
 local profiles: {[Player]: PlayerData} = {}
 local DEFAULT_DATA = { coins = 100 }
+local MAX_ATTEMPTS = 3
+local AUTOSAVE_INTERVAL = 60
+
+
+local function withRetries<T>(fn: () -> T): (boolean, T | string)
+    local lastError = "unknown error"
+    for i=1, MAX_ATTEMPTS do
+        local ok, result = pcall(fn)
+        if ok then
+            return true, result
+        end
+        lastError = tostring(result)
+        if i < MAX_ATTEMPTS then
+            warn(`[Data] Attempt {i} failed: {result}`)
+            task.wait(2 ^ i)
+        end
+    end
+    return false, lastError
+end
+
+
+local function reconcile(raw: unknown): PlayerData?
+    if typeof(raw) ~= "table" then
+        return nil
+    end
+    local data = table.clone(DEFAULT_DATA)
+    for key, default in DEFAULT_DATA do
+        local value = (raw :: any)[key]
+        if typeof(value) == typeof(default) then
+            (data :: any)[key] = value
+        end
+    end
+    return data
+end
 
 
 local function getKey(player: Player): string
@@ -14,24 +48,29 @@ end
 
 
 local function loadData(player: Player):(boolean, PlayerData?)
-    local ok, result = pcall(function()
+    local ok, result = withRetries(function()
         return store:GetAsync(getKey(player))
     end)
     if not ok then
-        warn(`[Data] Failed to load {player.Name}: {result}`)
+        warn(`[Data] Failed to load {player.Name}: {result}`) 
         return false, nil
     end
     if result == nil then
         return true, table.clone(DEFAULT_DATA)
     end
-    return true, result
+    local data = reconcile(result)
+    if not data then
+        warn(`[Data] Corrupted data for {player.Name}`)
+        return false, nil
+    end
+    return true, data
 end
 
 
 local function saveData(player: Player, playerData: PlayerData): boolean
     local key = getKey(player)
-    local ok, result = pcall(function()
-        return store:SetAsync(key, playerData)
+    local ok, result = withRetries(function()
+        return store:UpdateAsync(key, function() return playerData end)
     end)
 
     if not ok then
@@ -73,13 +112,28 @@ function DataService.start()
         print(`[Data] Loaded {player.Name}: {playerData.coins} coins`)
     end
 
+    task.spawn(function()
+        while true do
+            task.wait(AUTOSAVE_INTERVAL)
+            for player, data in profiles do
+                task.spawn(function()
+                    if saveData(player, data) then
+                        print(`[Data] Autosaved {player.Name}: {data.coins} coins`)
+                    else
+                        warn(`[Data] Failed to autosave {player.Name}`)
+                    end
+                end)
+            end
+        end
+    end)
+
     Players.PlayerAdded:Connect(onPlayerAdded)
     Players.PlayerRemoving:Connect(function(player: Player)
         local data = profiles[player]
+        profiles[player] = nil
         if data then
             saveData(player, data)
         end
-        profiles[player] = nil
     end)
     for _, player in Players:GetPlayers() do
         task.spawn(onPlayerAdded, player)
