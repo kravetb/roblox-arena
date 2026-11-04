@@ -44,17 +44,17 @@
 
 ## Поточне завдання
 
-Крок 2 завершено.
-- 2.1, магазин: RemoteFunction `BuyItem`, `ShopService` з валідацією та rate limit, `BuyResult` у `src/shared/Results/`.
-- 2.2, цикл раундів, у `src/server/Services/RoundService.luau`: Waiting → Lobby (15 с) → InRound (до 60 с) → Results (5 с).
-  - Стан передається через атрибути `GameState` і `PhaseEndsAt` на ReplicatedStorage.
-  - Телепорт на арену через `PivotTo`, у лобі через `LoadCharacterAsync`.
-  - Раунд закінчується достроково, коли лишається один живий.
-  - Переможець отримує 50 монет (`CurrencyService.add`), а клієнти дізнаються про нього через RemoteEvent `RoundEnded`.
-- Клієнт `src/client/Controllers/RoundController.luau` друкує стан, таймер і переможця.
-- Карта зберігається в `place.rbxl`.
+Кроки 2 і 3 завершено.
+- Крок 2: магазин (`ShopService`, RemoteFunction `BuyItem`) і цикл раундів (`RoundService`, атрибути `GameState`/`PhaseEndsAt`, RemoteEvent `RoundEnded`, нагорода 50 монет).
+- Крок 3: `src/server/Services/DataService.luau` зберігає дані в DataStore `PlayerData_v1` під ключем `Player_<UserId>`.
+  - `withRetries` (3 спроби, backoff 2/4 с) і `reconcile` (валідація і дефолти).
+  - Кеш `profiles`, кік при помилці завантаження.
+  - Збереження через `UpdateAsync` у `PlayerRemoving`, `BindToClose` і autosave кожні 60 с.
+  - `leaderstats/Coins` для таблиці Tab.
+  - `CurrencyService` працює через `DataService.get`, а `DataService.start()` запускається першим.
+- Гра опублікована, Studio Access to API Services увімкнено.
 
-Далі крок 3: DataStore (збереження монет між сесіями), leaderstats, надійна економіка.
+Далі крок 4: UI (таймер, стан, магазин на екрані), TweenService, звуки, тести, публікація.
 
 Готово в кроці 1: `src/shared/Items/Item.luau`, `src/shared/Items/Weapon.luau` (наслідування, кулдаун атаки).
 
@@ -65,3 +65,4 @@
 - Підсумок 2.1 (магазин): https://claude.ai/artifact/5CG95o6qpkHTUJDWWdnSYx
 - Концепції циклу раундів: https://claude.ai/artifact/3ETdTAU3qa1tdrWvqkHMD2
 - Підсумок 2.2 (цикл раундів): https://claude.ai/artifact/CmfbybF6KMieTfLd88NXUn
+- Підсумок кроку 3 (DataStore): https://claude.ai/artifact/H3K2PRSebKANXUCH6EU5ot
