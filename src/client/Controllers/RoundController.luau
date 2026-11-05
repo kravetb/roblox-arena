@@ -1,9 +1,12 @@
 --!strict
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameStateModule = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("States"):WaitForChild("GameState"))
+local HudController = require(script.Parent:WaitForChild("HudController"))
 local RoundEnded = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RoundEnded") :: RemoteEvent
 
 type GameState = GameStateModule.GameState
+
+local currentState = "Waiting"
 
 local RoundController = {}
 
@@ -15,6 +18,7 @@ local function onStateChanged()
         return
     end
     local gameState = value :: GameState
+    currentState = gameState
     print(`[Client] State - {gameState}`)
 end
 
@@ -28,7 +32,7 @@ local function countTime()
             continue
         end
         local timeLeft = math.max(0, math.ceil(endsAt - workspace:GetServerTimeNow()))
-        print(`[Client] - {timeLeft}s`)
+        HudController.setStatus(`{currentState} - {timeLeft}s`)
         task.wait(0.5)
     end
 end
