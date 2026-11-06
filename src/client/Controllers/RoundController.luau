@@ -42,9 +42,9 @@ function RoundController.start()
     ReplicatedStorage:GetAttributeChangedSignal("GameState"):Connect(onStateChanged)
     RoundEnded.OnClientEvent:Connect(function(winnerName: unknown)
         if typeof(winnerName) == "string" then
-            print(`[Client] Winner: {winnerName}`)
+            HudController.showBanner(`Winner: {winnerName}`)
         else
-            print('[Client] No winner')
+            HudController.showBanner("No winner")
         end
     end)
     onStateChanged()

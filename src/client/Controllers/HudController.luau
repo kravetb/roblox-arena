@@ -1,9 +1,11 @@
 --!strict
+local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 local statusLabel: TextLabel? = nil
 local coinsLabel: TextLabel? = nil
+local bannerLabel: TextLabel? = nil
 
 
 local function createLabel(size: UDim2, anchor: Vector2, position: UDim2): TextLabel
@@ -32,6 +34,23 @@ function HudController.setCoins(coins: number)
     end
 end
 
+function HudController.showBanner(text: string)
+    if not bannerLabel then
+        return
+    end
+    bannerLabel.Text = text
+    task.spawn(function()
+        local info = TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        TweenService:Create(
+            bannerLabel, info, { TextTransparency = 0, BackgroundTransparency = 0.3 }
+        ):Play()
+        task.wait(3)
+        TweenService:Create(
+            bannerLabel, info, { TextTransparency = 1, BackgroundTransparency = 1 }
+        ):Play()
+    end)
+end
+
 local function bindCoins()
     local coins = player:WaitForChild("leaderstats"):WaitForChild("Coins")
     if not coins:IsA("IntValue") then
@@ -43,7 +62,7 @@ end
 
 function HudController.start()
     local gui = Instance.new("ScreenGui")
-    gui.Name = "Hud"
+    gui.Name = "HudGui"
     gui.ResetOnSpawn = false
 
     local sLabel = createLabel(
@@ -51,9 +70,19 @@ function HudController.start()
     )
     sLabel.Parent = gui
     statusLabel = sLabel
-    local cLabel = createLabel(UDim2.new(0, 150, 0, 40), Vector2.new(1, 0), UDim2.new(1, -10, 0, 10))
+    local cLabel = createLabel(
+        UDim2.new(0, 150, 0, 40), Vector2.new(1, 0), UDim2.new(1, -10, 0, 10)
+    )
     cLabel.Parent = gui
     coinsLabel = cLabel
+
+    local bLabel = createLabel(
+        UDim2.new(0, 400, 0, 80), Vector2.new(0.5, 0.5), UDim2.new(0.5, 0, 0.3, 0)
+    )
+    bLabel.TextTransparency = 1
+    bLabel.BackgroundTransparency = 1
+    bLabel.Parent = gui
+    bannerLabel = bLabel
 
     gui.Parent = player:WaitForChild("PlayerGui")
 
