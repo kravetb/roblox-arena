@@ -2,7 +2,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local GameStateModule = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("States"):WaitForChild("GameState"))
 local HudController = require(script.Parent:WaitForChild("HudController"))
+local SoundController = require(script.Parent.SoundController)
 local RoundEnded = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RoundEnded") :: RemoteEvent
+local Players = game:GetService("Players")
 
 type GameState = GameStateModule.GameState
 
@@ -43,6 +45,9 @@ function RoundController.start()
     RoundEnded.OnClientEvent:Connect(function(winnerName: unknown)
         if typeof(winnerName) == "string" then
             HudController.showBanner(`Winner: {winnerName}`)
+            if winnerName == Players.LocalPlayer.Name then
+                SoundController.play("Win")
+            end
         else
             HudController.showBanner("No winner")
         end

@@ -2,6 +2,8 @@
 local HudController = require(script.Controllers.HudController)
 local ShopController = require(script.Controllers.ShopController)
 local RoundController = require(script.Controllers.RoundController)
+local SoundController = require(script.Controllers.SoundController)
+SoundController.start()
 HudController.start()
 ShopController.start()
 RoundController.start()

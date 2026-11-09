@@ -4,6 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local HudController = require(script.Parent.HudController)
+local SoundController = require(script.Parent.SoundController)
 local BuyResultModule = require(
     ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Results"):WaitForChild("BuyResult")
 )
@@ -27,12 +28,15 @@ local function buySword()
 
     if not ok then
         HudController.showBanner("Shop error, try again")
+        SoundController.play("Error")
         return
     end
     if result.ok then
         HudController.showBanner("Bought Sword!")
+        SoundController.play("Buy")
     else
         HudController.showBanner(`Can't buy: {result.reason}`)
+        SoundController.play("Error")
     end
 end
 
