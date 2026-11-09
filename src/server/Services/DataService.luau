@@ -1,11 +1,15 @@
 --!strict
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
 local store = DataStoreService:GetDataStore("PlayerData_v1")
+local PlayerDataSchemaModule = require(
+    ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Schemas"):WaitForChild("PlayerDataSchema")
+)
 
-export type PlayerData = {coins: number}
+type PlayerData = PlayerDataSchemaModule.PlayerData
 local profiles: {[Player]: PlayerData} = {}
-local DEFAULT_DATA = { coins = 100 }
+
 local MAX_ATTEMPTS = 3
 local AUTOSAVE_INTERVAL = 60
 
@@ -27,21 +31,6 @@ local function withRetries<T>(fn: () -> T): (boolean, T | string)
 end
 
 
-local function reconcile(raw: unknown): PlayerData?
-    if typeof(raw) ~= "table" then
-        return nil
-    end
-    local data = table.clone(DEFAULT_DATA)
-    for key, default in DEFAULT_DATA do
-        local value = (raw :: any)[key]
-        if typeof(value) == typeof(default) then
-            (data :: any)[key] = value
-        end
-    end
-    return data
-end
-
-
 local function getKey(player: Player): string
     return "Player_" .. player.UserId
 end
@@ -56,9 +45,9 @@ local function loadData(player: Player):(boolean, PlayerData?)
         return false, nil
     end
     if result == nil then
-        return true, table.clone(DEFAULT_DATA)
+        return true, table.clone(PlayerDataSchemaModule.DEFAULT_DATA)
     end
-    local data = reconcile(result)
+    local data = PlayerDataSchemaModule.reconcile(result)
     if not data then
         warn(`[Data] Corrupted data for {player.Name}`)
         return false, nil
